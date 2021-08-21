@@ -7,10 +7,10 @@ import torch
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
 infile2 = load_dataset('squad', split='train')
-outfile2 = './SQuAD_train_final3.json'
+outfile2 = './SQuAD_train_final.json'
 
 infile3 = load_dataset('squad', split='validation')
-outfile3 = "./SQuAD_test_final3.json"
+outfile3 = "./SQuAD_test_final.json"
 
 if __name__ == '__main__':
     tokenizer_squad(infile2, outfile2, tokenizer)

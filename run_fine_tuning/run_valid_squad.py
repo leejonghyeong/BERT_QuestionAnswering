@@ -1,9 +1,9 @@
 import numpy as np
-from .squad_utils import (find_ends, pred_index, f1_token_score, f1_string_score)
+from .squad_utils import (f1_token_score, f1_string_score)
 import torch
 from transformers import BertTokenizer
 
-def eval_epoch(model, token_emb, answers, sep_token_indices, bert_inputs, batch_size, device, tokenizer: BertTokenizer):
+def eval_epoch(model, answers, bert_inputs, batch_size, tokenizer: BertTokenizer):
 
     pred_scores = model(bert_inputs)
     _, pred_indices = pred_scores.max(dim=1)

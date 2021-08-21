@@ -1,11 +1,10 @@
 from torch.nn.utils.clip_grad import clip_grad_norm_
-from .squad_utils import find_ends, get_answer_mask, get_index_order_mask, pred_index, get_question_mask
 from transformers import BertModel
 import numpy as np
 from torch.nn.utils import clip_grad_norm
 
 
-def train_epoch(model, criterion, optimizer, batch_size, answer_indices, bert_inputs, device):
+def train_epoch(model, criterion, optimizer, answer_indices, bert_inputs):
 
     pred_scores = model(bert_inputs)
 

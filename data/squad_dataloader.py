@@ -3,7 +3,7 @@ import json
 from tqdm.notebook import tqdm
 
 from torch.utils.data import Dataset
-from .data_utils import find_answer_indices, json_to_list
+from .data_utils import json_to_list
 from ..run_fine_tuning.squad_args import squad_args
 
 class SquadDataset(Dataset):
@@ -12,7 +12,6 @@ class SquadDataset(Dataset):
 
         self.args = squad_args()
         self.sentences_ret = []
-        self.sep_token_indices = []
         self.answers = []
         self.answer_indices = []
         self.sentences = json_to_list(infile)
@@ -25,9 +24,6 @@ class SquadDataset(Dataset):
             answer = data["answer"]
             answer_indices = data["answer_indices"]
             
-            sep_token_index = len(question) + 1
-
-            self.sep_token_indices.append([sep_token_index])
             self.answers.append(answer)
             self.answer_indices.append(answer_indices)
             self.sentences_ret.append(
@@ -48,7 +44,6 @@ class SquadDataset(Dataset):
         #정답 인덱스가 하나씩 밀려있는것 같아서(cls 토큰 미고려로 인해)
         #일단 임시로 인덱스에 1씩 더해주겠음
 
-        return (torch.tensor(self.sep_token_indices[item]),
-                torch.tensor(self.answers[item]),
+        return (torch.tensor(self.answers[item]),
                 torch.tensor(self.answer_indices[item]) + 1,
                 torch.tensor(self.sentences_ret[item]))
