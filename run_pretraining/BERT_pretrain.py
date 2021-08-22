@@ -83,29 +83,3 @@ def pretrain_BERT(config):
 
     #torch.save(model.state_dict(), 'BERT_pretrained.pt')
 #model saved 필요
-'''
-for i in range(100):
-    print(vocab.IdToPiece(i))
-print(vocab.PieceToId("[MASK]"))
-print(vocab.PieceToId("[IsNext]"))
-print(vocab.PieceToId("[NotNext]"))
-#pretrain_BERT(config)
-'''
-
-'''
-inputs = torch.tensor([[1,2,3,4,5],[-1,-2,-3,-4,-5]])
-labels = torch.tensor([[1],[0]])
-
-L = inputs.size(1)
-indices = torch.arange(L+1)[torch.arange(L+1) != 1]
-labels_reshaped = labels.unsqueeze(0).transpose(0,1)
-print(labels_reshaped)
-print(labels)
-print(inputs)
-concat = torch.cat((labels, inputs), dim =1)
-
-print(concat)
-print(torch.index_select(concat, 1, indices))
-'''
-
-pretrain_BERT(config)

@@ -1,11 +1,16 @@
 from torch.nn.utils.clip_grad import clip_grad_norm_
 from transformers import BertModel
-import numpy as np
-from torch.nn.utils import clip_grad_norm
+from torch import Tensor
 
 
-def train_epoch(model, criterion, optimizer, answer_indices, bert_inputs):
-
+def train_epoch(
+    model: BertModel, 
+    criterion, 
+    optimizer, 
+    answer_indices: Tensor, 
+    bert_inputs: Tensor
+    )->float:
+    
     pred_scores = model(bert_inputs)
 
     optimizer.zero_grad()
@@ -16,6 +21,4 @@ def train_epoch(model, criterion, optimizer, answer_indices, bert_inputs):
 
     optimizer.step()
 
-
-    
     return loss.item()

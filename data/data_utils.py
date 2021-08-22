@@ -6,7 +6,12 @@ import torch
 
 from transformers.models.bert.tokenization_bert import BertTokenizer
 
-def masking_input_tokens(input: Tensor, probability: int, mask_token_id: int, n_vocab: int)-> Tensor:
+def masking_input_tokens(
+    input: Tensor, 
+    probability: int, 
+    mask_token_id: int, 
+    n_vocab: int
+    )-> Tensor:
     '''
     Masking input sentence with given probability. We will mask tokens by [MASK] token for 80%, random token for 10%, and original token for 10%.
 
@@ -41,7 +46,13 @@ def masking_input_tokens(input: Tensor, probability: int, mask_token_id: int, n_
     return input
 
 
-def random_sentence(sentences: list, i: int, n_lines: int, NotNext_token_id: int, IsNext_token_id: int)->Tuple[list, list]:
+def random_sentence(
+    sentences: list, 
+    i: int, 
+    n_lines: int, 
+    NotNext_token_id: int, 
+    IsNext_token_id: int
+    )->Tuple[list, list]:
     '''
     Return random sentence for 50% prob and next sentence for else
 
@@ -69,13 +80,17 @@ def random_sentence(sentences: list, i: int, n_lines: int, NotNext_token_id: int
     return next_sentence, label
 
 
-def find_answer_indices(answer, context, sep_token_index)-> List:
+def find_answer_indices(
+    answer: List, 
+    context: List, 
+    sep_token_index: int
+    )-> List:
     for i in range(len(context)):
         if answer == context[i: i + len(answer)]:
             return [i + sep_token_index, i + sep_token_index + len(answer) - 1]
         
 
-def squad_collate_fn(inputs):
+def squad_collate_fn(inputs: Tuple(Tensor))->List[Tensor]:
     sep_token_indices, answers, answer_indices, bert_inputs = list(zip(*inputs))
 
     answers = torch.nn.utils.rnn.pad_sequence(answers, batch_first = True, padding_value= 0)
@@ -84,26 +99,34 @@ def squad_collate_fn(inputs):
     return [torch.stack(sep_token_indices), answers, torch.stack(answer_indices), bert_inputs]
 
 
-def len_limit_squad(instance: dict, max_length: Optional[int] = 512) -> bool:
+def len_limit_squad(
+    instance: dict, 
+    max_length: Optional[int] = 512
+    ) -> bool:
+
     if len(instance["question"]) + len(instance["context"]) <= max_length - 3:
         return False
     
     return True
 
-def tokenizer_squad(infile, outfile, tokenizer: BertTokenizer, max_length: Optional[int] = 512):
+def tokenizer_squad(
+    infile: str,
+    outfile: str,
+    tokenizer: BertTokenizer, 
+    max_length: Optional[int] = 512
+    ):
     '''
     tokenize SQuAD dataset if given sentence length is less than max_length
 
     Args:
-        infile:
+        infile (:obj:`str`):
             SQuAD dataset loaded from huggingface
-        outfile: 
-            json file
+        outfile (:obj:`str`): 
+            json file of tokenized instances
         tokenizer:
             BertTokenizer, from huggingface, pretrained for 'bert-base-uncased'
-        max_length (int):
+        max_length (:obj:`int`):
             max_length for input sentence length including [CLS], [SEP] tokens
-
     '''
 
     with open(outfile, "wt") as f:
@@ -117,9 +140,7 @@ def tokenizer_squad(infile, outfile, tokenizer: BertTokenizer, max_length: Optio
             cont_id = tokenizer.encode(context, add_special_tokens= False)
             quest_id = tokenizer.encode(question, add_special_tokens= False)
             
-            #special token 제외했으므로 cls 토큰도 고려해줘야함
-            #나중 수정사항: len(quest_id) + 2
-            sep_token_id = len(quest_id) + 1
+            sep_token_id = len(quest_id) + 2
             ans_indices = find_answer_indices(ans_id, cont_id, sep_token_id)
 
             instance = { 
@@ -137,6 +158,9 @@ def tokenizer_squad(infile, outfile, tokenizer: BertTokenizer, max_length: Optio
 
             f.write(json.dumps(instance)+"\n")
 
-def json_to_list(infile):
+def json_to_list(infile: str)->List:
+    '''
+    read json file and return the list of its sentences
+    '''
     with open(infile, "rt") as f:
         return f.readlines()
